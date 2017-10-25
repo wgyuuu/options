@@ -3,7 +3,7 @@ package options
 import "github.com/BurntSushi/toml"
 
 type (
-	HandleGet func(key string) (value string)
+	HandleGet func(key, defVal string) (value string)
 )
 
 var (
@@ -27,5 +27,19 @@ func (o *Options) Parsing(obj interface{}) error {
 		return err
 	}
 
-	return resolve(obj, o.hget)
+	if o.hget != nil {
+		return resolve(obj, o.hget)
+	}
+	return nil
+}
+
+func (o *Options) Sync(obj interface{}) (sync chan<- struct{}) {
+	ch := make(chan struct{})
+	go func() {
+		for range ch {
+			resolve(obj, o.hget)
+		}
+	}()
+
+	return ch
 }

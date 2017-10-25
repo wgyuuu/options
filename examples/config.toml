@@ -1,0 +1,9 @@
+[App]
+    Debug = true
+
+[Test]
+    IntA = 1
+    [Test.MapB]
+        a = "test a"
+        b = "test b"
+

@@ -2,8 +2,10 @@ package options
 
 import (
 	"encoding/json"
+	"errors"
 	"reflect"
 	"strconv"
+	"strings"
 	"unsafe"
 )
 
@@ -20,7 +22,7 @@ func resolve(obj interface{}, hget HandleGet) (err error) {
 			err = resolve(fieldVal.Addr().Interface(), hget)
 		case reflect.Ptr:
 			if !fieldVal.IsNil() {
-				err = resolve(filedVal, hget)
+				err = resolve(fieldVal, hget)
 			}
 		default:
 			err = assign(field, fieldVal, hget)
@@ -46,6 +48,14 @@ func assign(field reflect.StructField, val reflect.Value, hget HandleGet) (err e
 	}
 
 	switch val.Kind() {
+	case reflect.Bool:
+		if b := strings.ToLower(value); b == "true" {
+			val.SetBool(true)
+		} else if b == "false" {
+			val.SetBool(false)
+		} else {
+			return errors.New("type error of bool")
+		}
 	case reflect.String:
 		val.SetString(value)
 	case reflect.Slice, reflect.Array:
