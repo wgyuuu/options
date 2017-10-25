@@ -1,5 +1,5 @@
 [App]
-    Debug = true
+    Debug = false
 
 [Test]
     IntA = 1
